@@ -1,0 +1,30 @@
+<div class="m-5 w-50 pt-3">
+  <label class="form-label">Categories</label>
+  <select class="form-select form-select-lg" name="catSelect" id="catSelect" [(ngModel)]="selectedCatId">
+    <option value="">All Categories</option>
+    @for(cat of categories; track cat.id) {
+    <option [value]="cat.id">{{ cat.name }}</option>
+    }
+  </select>
+</div>
+
+<div class="row row-cols-1 row-cols-md-4 g-4 p-4 m-5 pt-2 mt-2">
+  @for(prod of filteredProducts; track prod.id) {
+  <div class="col">
+    <div class="card h-100" [class.bg-danger]="prod.avilableQuantity == 0" >
+      <img [src]="prod.imgUrl" class="card-img-top" alt="{{prod.description}}" style="height:180px; object-fit:cover;">
+      <div class="card-body">
+        <h5 class="card-title fs-6">{{ prod.brandName }}</h5>
+        <p class="card-text fs-7">{{ prod.description }}</p>
+        <p class="card-text fs-7"><strong>Price:</strong> {{ prod.price }}</p>
+        <p class="card-text fs-7"><strong>Available:</strong> {{ prod.avilableQuantity }}</p>
+        <label class="form-label fs-7">Quantity</label>
+        <input type="number" class="form-control form-control-sm mb-2" min="1" max="25" value="1" #quantityInp
+          [disabled]="prod.avilableQuantity === 0">
+        <a href="#" class="btn btn-primary btn-sm w-100" (click)="decreaseQuantity(+quantityInp.value, prod.id)">Buy
+          Now</a>
+      </div>
+    </div>
+  </div>
+  }
+</div>
