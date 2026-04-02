@@ -1,0 +1,30 @@
+
+
+  .navbar {
+    border-radius: 0 0 15px 15px;
+  }
+
+  .nav-link {
+    font-weight: 500;
+    margin-right: 10px;
+    transition: color 0.3s, background-color 0.3s;
+  }
+
+  .nav-link:hover {
+    color: #ffd700;
+  }
+
+  .nav-link.active {
+    color: #ffd700;
+    font-weight: 700;
+    border-bottom: 2px solid #ffd700;
+  }
+
+  .navbar-brand {
+    color: #fff;
+  }
+
+  .navbar-brand:hover {
+    color: #ffd700;
+  }
+

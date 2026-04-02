@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { ProductComponent } from "../components/product/product.component";
+
+
+import { FooterComponent } from "../components/footer/footer.component";
+import { NavbarComponent } from "../components/navbar/navbar.component";
+import { RouterOutlet } from "@angular/router";
 
 @Component({
   selector: 'app-root',
-  imports: [ProductComponent],
+  imports: [RouterOutlet ,FooterComponent, NavbarComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrl: './app.component.css',
+  standalone: true,
 })
 export class AppComponent {
   title = 'styly';
