@@ -2,16 +2,21 @@ import { Component } from '@angular/core';
 import { Product } from '../../models/product';
 import { Category } from '../../models/category';
 import { FormsModule } from '@angular/forms';
-import { NgClass, NgStyle } from "../../../node_modules/@angular/common/common_module.d-NEF7UaHr";
+import { DiscountPipe } from "../../../pipes/discount.pipe";
+import { DisableAfterClickDirective } from '../../directive/disable-after-click.directive';
+
 
 @Component({
   selector: 'app-product',
   standalone: true,
-  imports: [FormsModule, NgStyle],
+  imports: [FormsModule, DiscountPipe, DisableAfterClickDirective],
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],
 })
 export class ProductComponent {
+handleClick() {
+throw new Error('Method not implemented.');
+}
   selectedCatId: any = '';
   products: Product[] = [
     {
@@ -143,14 +148,14 @@ export class ProductComponent {
   decreaseQuantity(qInputByUser: number, prodId: number) {
     let product = this.products.find((prod) => prod.id === prodId);
     if (!product) {
-      alert('test');
+
       return;
     }
     const quantityToBuy = Math.min(qInputByUser, product.avilableQuantity);
     product.avilableQuantity -= quantityToBuy;
 
     if (product.avilableQuantity === 0) {
-      alert('Product is now out of stock!');
+      // alert('Product is now out of stock!');
     }
   }
 
