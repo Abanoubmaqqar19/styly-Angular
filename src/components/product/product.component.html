@@ -1,41 +1,45 @@
-
 <div class="row row-cols-1 row-cols-md-4 g-4 p-4 m-5 pt-2 mt-2">
   @for(prod of filteredProducts; track prod.id) {
   <div class="col">
     <!-- //*    t2    -->
-    <div class="card h-100" [class.bg-danger]="prod.avilableQuantity == 0" >
+    <div class="card h-100" [class.bg-danger]="prod.avilableQuantity == 0" style="cursor: pointer;"
+      (click)="viewProduct(prod.id)">
       <img [src]="prod.imgUrl" class="card-img-top" alt="{{prod.description}}" style="height:180px; object-fit:cover;">
       <div class="card-body">
         <h5 class="card-title fs-6">{{ prod.brandName }}</h5>
         <p class="card-text fs-7">{{ prod.description }}</p>
-    <p class="card-text fs-7">
+        <p class="card-text fs-7">
 
 
 
 
-      <!-- ************************************Price  pipe  -->
-      <strong>Price:</strong><br>
+          <!-- ************************************Price  pipe  -->
+          <strong>Price:</strong><br>
 
-      <span class="text-muted text-decoration-line-through me-2">
-        {{ prod.price }}
-      </span>
+          <span class="text-muted text-decoration-line-through me-2">
+            {{ prod.price }}
+          </span>
 
 
-      <span class="text-secondary-emphasis fw-bold">
-        {{ prod.price | discount:20 }}
-      </span>
-    </p>
-<!-- //************************************************* -->
+          <span class="text-secondary-emphasis fw-bold">
+            {{ prod.price | discount:20 }}
+          </span>
+        </p>
+        <!-- //************************************************* -->
 
         <p class="card-text fs-7"><strong>Available:</strong> {{ prod.avilableQuantity }}</p>
         <label class="form-label fs-7">Quantity</label>
         <input type="number" class="form-control form-control-sm mb-2" min="1" max="25" value="1" #quantityInp
           [disabled]="prod.avilableQuantity === 0">
-          <!-- //***********************directive  -->
-      <button appDisableAfterClick class="btn btn-primary" (click)="decreaseQuantity(+quantityInp.value, prod.id)"
-        [disabled]="prod.avilableQuantity === 0">
-        Buy Now
-      </button>
+        <!-- //***********************directive  -->
+        <button appDisableAfterClick class="btn btn-primary me-2"
+          (click)="decreaseQuantity(+quantityInp.value, prod.id); $event.stopPropagation()"
+          [disabled]="prod.avilableQuantity === 0">
+          Buy Now
+        </button>
+        <button class="btn btn-info" (click)="viewProduct(prod.id); $event.stopPropagation()">
+          Details
+        </button>
 
 
       </div>

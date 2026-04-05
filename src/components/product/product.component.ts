@@ -1,8 +1,10 @@
-import { Component, Input } from '@angular/core';
-import { ProductServiceService } from '../../services/productService/product-service.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { CourseService } from '../../services/courseService/course.service';
+import { Course } from '../../models/course';
 import { FormsModule } from '@angular/forms';
 import { DiscountPipe } from '../../../pipes/discount.pipe';
 import { DisableAfterClickDirective } from '../../directive/disable-after-click.directive';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product',
@@ -11,14 +13,24 @@ import { DisableAfterClickDirective } from '../../directive/disable-after-click.
   templateUrl: './product.component.html',
   styleUrls: ['./product.component.css'],
 })
-export class ProductComponent {
+export class ProductComponent implements OnInit {
   @Input() selectedCatId: number | string = '';
+  courses: Course[] = [];
 
-  constructor(private productService: ProductServiceService) {}
+  constructor(
+    private courseService: CourseService,
+    private router: Router,
+  ) {}
+
+  ngOnInit() {
+    this.courseService.getAllCourses().subscribe((courses) => {
+      this.courses = courses;
+    });
+  }
 
   // getter to access products from service
   get products() {
-    return this.productService.products;
+    return this.courses;
   }
 
   // filter
@@ -36,5 +48,12 @@ export class ProductComponent {
 
     const q = Math.min(qInputByUser, product.avilableQuantity);
     product.avilableQuantity -= q;
+  }
+
+  // navigate to product detail
+  viewProduct(prodId: number) {
+    this.router.navigate(['product', prodId], {
+      relativeTo: this.router.routerState.root.firstChild,
+    });
   }
 }
