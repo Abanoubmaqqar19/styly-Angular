@@ -1,207 +1,169 @@
-# Angular Product Filter App
+# Styly Angular Shopping App
 
-A product listing page built with Angular that filters products by category using two-way data binding.
+A standalone Angular shopping app that shows product listings, category filtering, and nested product detail routing.
 
----
+## Project Summary
+
+Styly is an Angular 19 app built with standalone components and Bootstrap. It includes:
+
+- Category filtering for products
+- Child routing under `/orders`
+- Product detail page for a selected item
+- API-backed services for categories and courses/products
+- Reactive HTTP data fetching using Angular's `HttpClient`
+
+## Key Features
+
+- `GET /category` API to load categories
+- `GET /product` API to load product/course items
+- `GET /product?catId={id}` to filter by category
+- `GET /product/{id}` to load a detailed product page
+- `POST /product` to add a new product/course
+- Nested route structure: `/orders` and `/orders/product/:id`
+- Standalone Angular components without NgModules
+- Bootstrap 5 UI for responsive product cards
+
+## Architecture
+
+### Routing
+
+Routes are defined in `src/app/app.routes.ts`:
+
+- `/home` → `HomeComponent`
+- `/about` → `AboutUsComponent`
+- `/contact` → `ContactUsComponent`
+- `/orders` → `OrderComponent`
+  - child `''` → `ProductListComponent`
+  - child `product/:id` → `ProductDetailComponent`
+- `**` → `NotfoundComponent`
+
+### Root Configuration
+
+`src/app/app.config.ts` configures providers for:
+
+- Angular router
+- HTTP client
+- zone change detection
+
+### Components
+
+- `AppComponent` — application shell with navbar/footer and router outlet
+- `OrderComponent` — parent route for order views and child outlet
+- `ProductListComponent` — category selector and product list renderer
+- `ProductComponent` — product cards and actions
+- `ProductDetailComponent` — single product detail display
+- `NavbarComponent`, `FooterComponent`, `HomeComponent`, `AboutUsComponent`, `ContactUsComponent`, `NotfoundComponent`
+
+### Models
+
+- `src/models/category.ts` — `Category` interface
+- `src/models/course.ts` — `Course` interface representing product items
+- `src/models/product.ts` — existing product model used by legacy service
+
+### Services
+
+#### `CategoryService`
+
+- `getAllCategories()`
+
+Fetches categories from:
+
+`https://69d268805043d95be971da27.mockapi.io/category`
+
+#### `CourseService`
+
+- `getAllCourses()`
+- `getCoursesByCategoryID(catID)`
+- `getCourseByID(cID)`
+- `addCourse(course)`
+
+Uses the API endpoint:
+
+`https://69d268805043d95be971da27.mockapi.io/product`
+
+#### Legacy services
+
+- `ProductServiceService` contains static product data
+- `CategorServService` contains static category data
+
+These remain in the project but modern app flows use the API-backed services.
+
+## Setup
+
+```bash
+cd styly
+npm install
+npm start
+```
+
+Then open the app at:
+
+```bash
+http://localhost:4200
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+## Notes
+
+- The app uses standalone components (`standalone: true`) instead of NgModules.
+- `provideHttpClient()` is enabled in `src/app/app.config.ts` to support HTTP API calls.
+- The app uses `RouterOutlet` inside `OrderComponent` to render nested child routes.
+
+## Folder Structure
+
+```text
+src/
+  app/
+    app.component.ts
+    app.config.ts
+    app.routes.ts
+    components/
+      about-us/
+      contact-us/
+      footer/
+      home/
+      navbar/
+      notfound/
+      order/
+      product-detail/
+      product-list/
+  components/
+    product/
+  models/
+    category.ts
+    course.ts
+    product.ts
+  services/
+    categoryService/
+      category.service.ts
+    courseService/
+      course.service.ts
+    categoresService/
+      categor-serv.service.ts
+    productService/
+      product-service.service.ts
+```
+
+## Useful Commands
+
+- `npm start` — run development server
+- `npm run build` — build production bundle
+- `npm test` — run unit tests
 
 ## Author
 
-**Abanoub Maqqar**  
-LinkedIn: https://www.linkedin.com/in/abanoub-maqqar
+Abanoub Maqqar
 
----
-
-## Overview
-
-This project displays a list of fashion products and allows the user to filter them by category using a dropdown. It is built as a standalone Angular component using Bootstrap for layout.
-
----
-
-## Concepts Learned
-
-### 1. Two-Way Data Binding — [(ngModel)]
-
-Connects a form element to a component property in both directions. When the user picks a value, the property updates. When the property changes in code, the input reflects it.
-
-```html
-<select [(ngModel)]="selectedCatId" (ngModelChange)="onCategoryChange($event)">
-```
-
-
-
----
-
-### 2. Event Binding — (ngModelChange)
-
-Fires a function every time the user changes the selected value. Used here to trigger the filter logic.
-
-```ts
-onCategoryChange(value: any) {
-  if (!value) {
-    this.filteredProducts = this.products;
-  } else {
-    this.filteredProducts = this.products.filter(p => p.catId == +value);
-  }
-}
-```
-
----
-
-### 3. @for Loop (Angular 17+)
-
-Replaces *ngFor. Loops over an array and renders an element for each item.
-
-```html
-@for(prod of filteredProducts; track prod.id) {
-  <div class="col">...</div>
-}
-```
-
----
-
-### 4. @if / @else (Angular 17+)
-
-Replaces *ngIf. Shows or hides elements based on a condition.
-
-```html
-@if(prod.avilableQuantity === 0) {
-  <span>Out of Stock</span>
-} @else {
-  <button>Buy Now</button>
-}
-```
-
----
-
-### 5. Property Binding
-
-Binds an HTML attribute to a component value using square brackets.
-
-```html
-<option [value]="cat.id">{{ cat.name }}</option>
-<input [disabled]="prod.avilableQuantity === 0">
-<div [class.bg-danger]="prod.avilableQuantity == 0">
-```
-
----
-
-### 6. Filtering Arrays
-
-Using the built-in .filter() method to return only products that match the selected category.
-
-```ts
-this.filteredProducts = this.products.filter(p => p.catId == +value);
-```
-
-Note: +value converts the string coming from ngModel into a number.
-
----
-
-### 7. Template Reference Variables
-
-Using # to get direct access to a DOM element in the template without going through the component.
-
-```html
-<input #quantityInp type="number" value="1">
-<button (click)="decreaseQuantity(+quantityInp.value, prod.id)">Buy Now</button>
-```
-
----
-
-### 8. ngOnInit Lifecycle Hook
-
-Runs once when the component loads. Used here to set the full product list before any filter is applied.
-
-```ts
-ngOnInit() {
-  this.filteredProducts = this.products;
-}
-```
-
----
-
-### 9. Type Coercion Bug
-
-ngModel on a select always returns a string. Comparing that string to a number with === will always fail.
-
-```ts
-// Wrong
-this.products.filter(p => p.catId === value)
-
-// Correct
-this.products.filter(p => p.catId == +value)
-```
-
----
-
-### 10. Standalone Components
-
-Components with standalone: true do not need an NgModule. All imports are declared directly inside the component decorator.
-
-```ts
-@Component({
-  selector: 'app-product',
-  standalone: true,
-  imports: [FormsModule],
-  templateUrl: './product.component.html',
-})
-```
-
----
-
-## Angular Directives Reference
-
-A directive is a class that adds behavior or changes the appearance of a DOM element. The three covered here are attribute directives from @angular/common and @angular/forms.
-
----
-
-### NgClass — Dynamic CSS Classes
-
-NgClass adds or removes CSS classes on an element based on conditions in the component.
-
-Import:
-```ts
-import { NgClass } from '@angular/common';
-```
-
-Usage:
-```html
-<!-- Single class -->
-<div [ngClass]="'active'">...</div>
-
-<!-- Multiple classes -->
-<div [ngClass]="['active', 'highlight']">...</div>
-
-<!-- Conditional classes using an object -->
-<div [ngClass]="{ 'active': isActive, 'disabled': isDisabled }">...</div>
-```
-
-The object form is the most common. The key is the class name and the value is a boolean. The class is applied only when the value is true.
-
-Project example:
-```html
-<div class="card h-100" [ngClass]="{ 'bg-danger': prod.avilableQuantity === 0 }">
-```
-
-Use [class.x] for a single class. Use NgClass when toggling multiple classes or passing an object from the component.
-
----
-
-### NgStyle — Dynamic Inline Styles
-
-NgStyle sets one or more inline CSS style properties on an element using a key-value object.
-
-Import:
-```ts
-import { NgStyle } from '@angular/common';
-```
-
-Usage:
-```html
 <div [ngStyle]="{ 'color': textColor, 'font-size': fontSize + 'px' }">...</div>
 ```
 
 From a component method:
+
 ```ts
 getStyles() {
   return {
@@ -210,13 +172,15 @@ getStyles() {
   };
 }
 ```
+
 ```html
 <div [ngStyle]="getStyles()">...</div>
 ```
 
 Project example:
+
 ```html
-<img [src]="prod.imgUrl" [ngStyle]="{ 'height': '180px', 'object-fit': 'cover' }">
+<img [src]="prod.imgUrl" [ngStyle]="{ 'height': '180px', 'object-fit': 'cover' }" />
 ```
 
 Important: CSS property names with hyphens must be wrapped in quotes inside the object.
@@ -235,23 +199,29 @@ Use [style.property] for a single style. Use NgStyle when setting multiple style
 NgModel creates a two-way link between a form input and a component property. It listens for user input and updates the property, and reflects any property change back to the input.
 
 Import:
+
 ```ts
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from "@angular/forms";
 ```
 
 The [(ngModel)] syntax is shorthand for:
+
 ```html
-[ngModel]="value"                    <!-- component to view -->
-(ngModelChange)="value = $event"     <!-- view to component -->
+[ngModel]="value"
+<!-- component to view -->
+(ngModelChange)="value = $event"
+<!-- view to component -->
 ```
 
 Usage:
+
 ```html
-<input [(ngModel)]="username" type="text">
+<input [(ngModel)]="username" type="text" />
 <p>Hello, {{ username }}</p>
 ```
 
 With a change handler:
+
 ```html
 <select [(ngModel)]="selectedCatId" (ngModelChange)="onCategoryChange($event)">
   <option value="">All</option>
@@ -260,11 +230,13 @@ With a change handler:
 ```
 
 How it works:
+
 1. User changes the input
 2. (ngModelChange) fires and updates the component property
 3. [ngModel] reflects the new value back to the view
 
 Common mistakes:
+
 - Forgetting FormsModule in imports — ngModel silently does nothing
 - Using [value]="null" on an option — returns the string "null". Use value="" instead
 - Comparing number and string with === — use == or convert with +value
@@ -293,12 +265,12 @@ src/
 
 ## Category Mapping
 
-| ID | Category    |
-|----|-------------|
-| 1  | Clothing    |
-| 2  | Accessories |
-| 3  | Footwear    |
-| 4  | Bags        |
+| ID  | Category    |
+| --- | ----------- |
+| 1   | Clothing    |
+| 2   | Accessories |
+| 3   | Footwear    |
+| 4   | Bags        |
 
 ---
 
